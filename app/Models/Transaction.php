@@ -1,0 +1,29 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Transaction extends Model
+{
+    protected $fillable = [
+        'user_id', 'wallet_id', 'category_id', 'amount', 
+        'transaction_type', 'note', 'transaction_date', 
+        'currency', 'exchange_rate_to_base', 'attachment_url'
+    ];
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function wallet()
+    {
+        return $this->belongsTo(Wallet::class);
+    }
+}
