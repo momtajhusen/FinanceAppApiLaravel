@@ -25,15 +25,15 @@ class IconController extends Controller
     public function store(Request $request)
     {
         try {
-            $validator = Validator::make($request->all(), [
-                'name' => 'required|string',
-                'type' => 'required|in:Wallet,Categories',
-                'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-            ]);
+            // $validator = Validator::make($request->all(), [
+            //     'name' => 'required|string',
+            //     'type' => 'required|in:Wallet,Categories',
+            //     'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            // ]);
         
-            if ($validator->fails()) {
-                return response()->json(['errors' => $validator->errors()], 422);
-            }
+            // if ($validator->fails()) {
+            //     return response()->json(['errors' => $validator->errors()], 422);
+            // }
         
             // Handle the image upload
             if ($request->hasFile('image')) {
