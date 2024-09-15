@@ -10,11 +10,31 @@ use Illuminate\Support\Facades\Validator;
 class IconController extends Controller
 {
     // GET /icons
-    public function index()
+    public function index(Request $request)
     {
-        $icons = Icon::all();
-        return response()->json($icons);
+        $validated = $request->validate([
+            'user_id' => 'required|exists:users,id',  // Ensure that the user_id exists
+        ]);
+    
+        // Fetch wallets with related icon data
+        $wallets = Wallet::with('icon') // Assuming a 'icon' relationship exists in your Wallet model
+            ->where('user_id', $validated['user_id'])
+            ->get()
+            ->map(function ($wallet) {
+                return [
+                    'id' => $wallet->id,
+                    'name' => $wallet->name,
+                    'balance' => $wallet->balance,
+                    'currency' => $wallet->currency,
+                    'created_at' => $wallet->created_at,
+                    'updated_at' => $wallet->updated_at,
+                    'icon' => $wallet->icon ? $wallet->icon->url : null, // Assuming the icon model has a 'url' attribute
+                ];
+            });
+    
+        return response()->json($wallets, 200);
     }
+    
 
     // GET /icons/{id}
     public function show($id)
