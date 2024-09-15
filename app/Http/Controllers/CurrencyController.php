@@ -41,7 +41,6 @@ class CurrencyController extends Controller
             'flag' => $flagPath,
             'currency_code' => $request->currency_code,
             'currency_name' => $request->currency_name,
-            'exchange_rate_to_base' => $request->exchange_rate_to_base
         ]);
 
         return response()->json([
