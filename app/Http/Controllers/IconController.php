@@ -24,25 +24,30 @@ class IconController extends Controller
     // POST /icons
     public function store(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string',
             'type' => 'required|in:Wallet,Categories',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
     
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+    
         // Handle the image upload
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('icons', 'public'); // store the image in the 'icons' folder under 'public' disk
+            $imagePath = $request->file('image')->store('icons', 'public');
         }
     
         $icon = Icon::create([
             'name' => $request->name,
             'type' => $request->type,
-            'path' => $imagePath, // Store the image path after processing
+            'path' => $imagePath,
         ]);
     
         return response()->json($icon, 201);
     }
+    
     
 
     // PUT /icons/{id}
