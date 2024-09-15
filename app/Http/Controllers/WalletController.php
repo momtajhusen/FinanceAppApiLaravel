@@ -67,7 +67,7 @@ class WalletController extends Controller
             'user_id' => 'required|exists:users,id', // Ensure user exists
             'name' => 'sometimes|required|string|max:255|unique:wallets,name,' . $id . ',id,user_id,' . $request->user_id, // Ensure name is unique for the user
             'balance' => 'sometimes|required|numeric|min:0|max:99999999.99', // Ensure valid balance
-            'currency' => ['sometimes', 'required', 'string', 'size:3', Rule::in(['USD', 'EUR', 'INR', 'GBP'])], // Ensure valid currency code
+            'currency' => 'sometimes|required|string|size:3',
         ]);
 
         // Find the wallet based on id and user_id
