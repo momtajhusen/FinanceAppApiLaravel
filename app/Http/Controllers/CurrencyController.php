@@ -24,7 +24,6 @@ class CurrencyController extends Controller
             'flag' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'currency_code' => 'required|string|max:3|unique:currencies',
             'currency_name' => 'required|string|unique:currencies',
-            'exchange_rate_to_base' => 'required|numeric'
         ]);
 
         if ($validator->fails()) {
