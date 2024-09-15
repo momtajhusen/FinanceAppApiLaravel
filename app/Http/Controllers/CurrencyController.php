@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Currency;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
+
 
 class CurrencyController extends Controller
 {
@@ -25,7 +27,7 @@ class CurrencyController extends Controller
             'currency_code' => 'required|string|max:3|unique:currencies',
             'currency_name' => 'required|string|unique:currencies',
         ]);
-
+    
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
@@ -33,21 +35,35 @@ class CurrencyController extends Controller
                 'errors' => $validator->errors()
             ], 422);
         }
-
-        $flagPath = $request->hasFile('flag') ? $request->file('flag')->store('flags', 'public') : null;
-
+    
+        // Check if the file is received properly
+        if ($request->hasFile('flag')) {
+            // Log to check file details
+            \Log::info('File details', [$request->file('flag')]);
+    
+            // Handle the flag (image) upload
+            $flagPath = $request->file('flag')->store('flags', 'public');
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'File not received.',
+            ], 400);
+        }
+    
+        // Create the new currency
         $currency = Currency::create([
             'flag' => $flagPath,
             'currency_code' => $request->currency_code,
             'currency_name' => $request->currency_name,
         ]);
-
+    
         return response()->json([
             'success' => true,
             'message' => 'Currency created successfully.',
             'data' => $currency
         ], 201);
     }
+    
 
     public function show($id)
     {
