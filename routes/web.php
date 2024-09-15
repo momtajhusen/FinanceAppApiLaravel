@@ -9,6 +9,7 @@ Route::get('/', function () {
 
 // Route to trigger 'storage:link'
 Route::get('/command/storage', function () {
-    Artisan::call('storage:link');
-    return 'Storage link created successfully!';
+    $targetFolder = storage_path('app/public');
+    $linkFolder = $_SERVEr['DOCUMENT_ROOT'] . '/storage';
+    symlink($targetFolder, $linkFolder);
 });

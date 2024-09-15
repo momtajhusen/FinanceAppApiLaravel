@@ -9,18 +9,16 @@ class Wallet extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'user_id',
-        'name',
-        'balance',
-        'currency',
-    ];
+    protected $fillable = ['user_id', 'icon_id', 'name', 'balance', 'currency'];
 
-    /**
-     * Get the user that owns the wallet.
-     */
+    // Define relationships
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function icon()
+    {
+        return $this->belongsTo(Icon::class);
     }
 }
