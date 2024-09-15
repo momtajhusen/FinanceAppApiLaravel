@@ -27,7 +27,7 @@ class CurrencyController extends Controller
         $validator = Validator::make($request->all(), [
             'flag' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // validate image
             'currency_code' => 'required|string|max:3|unique:currencies,currency_code',
-            'currency_name' => 'required|string',
+            'currency_name' => 'required|string|unique:currencies,currency_name',
         ]);
 
         // If validation fails
