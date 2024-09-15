@@ -6,6 +6,8 @@ use App\Models\Wallet;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
+use App\Models\Icon;
+
 
 
 class WalletController extends Controller
@@ -17,11 +19,21 @@ class WalletController extends Controller
             'user_id' => 'required|exists:users,id',  // Ensure that the user_id exists
         ]);
 
+        // Fetch wallets
         $wallets = Wallet::where('user_id', $validated['user_id'])->get();
+
+        // Fetch icons based on the icon_id present in the wallets
+        $iconIds = $wallets->pluck('icon_id')->unique();
+        $icons = Icon::whereIn('id', $iconIds)->pluck('path', 'id');
+
+        // Map icon path to wallets
+        $wallets->map(function ($wallet) use ($icons) {
+            $wallet->icon_path = $icons->get($wallet->icon_id);
+            return $wallet;
+        });
 
         return response()->json($wallets, 200);
     }
-
     // POST: /api/wallets
     public function store(Request $request)
     {
