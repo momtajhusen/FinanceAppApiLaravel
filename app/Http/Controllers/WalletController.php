@@ -40,11 +40,29 @@ class WalletController extends Controller
         // Validate the request data before creating a wallet
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id',  // Ensure user exists
-            'icon_id' => 'required|exists:icones,id', // Ensure icon exists
-            'name' => 'required|string|max:255|unique:wallets,name,NULL,id,user_id,' . $request->user_id, // Ensure unique wallet name per user
+            'icon_id' => [
+                'required',
+                'exists:icons,id', // Ensure icon exists
+                Rule::unique('wallets')->where(function ($query) use ($request) {
+                    return $query->where('user_id', $request->user_id);
+                })
+            ], // Ensure unique icon_id per user_id
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('wallets')->where(function ($query) use ($request) {
+                    return $query->where('user_id', $request->user_id);
+                })
+            ], // Ensure unique wallet name per user
             'balance' => 'required|numeric|min:0|max:99999999.99', // Ensure balance is a positive number with a reasonable limit
             'currency' => 'sometimes|required|string|size:3', // Ensure currency is a valid 3-letter code (e.g., USD)
         ]);
+
+                
+        if ($validated->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
 
         // Create the wallet
         $wallet = Wallet::create($validated);
@@ -75,12 +93,28 @@ class WalletController extends Controller
     public function update(Request $request, $id)
     {
         // Validate the user_id and input data
+        // Validate the request data before creating a wallet
         $validated = $request->validate([
-            'user_id' => 'required|exists:users,id', // Ensure user exists
-            'name' => 'sometimes|required|string|max:255|unique:wallets,name,' . $id . ',id,user_id,' . $request->user_id, // Ensure name is unique for the user
-            'balance' => 'sometimes|required|numeric|min:0|max:99999999.99', // Ensure valid balance
-            'currency' => 'sometimes|required|string|size:3',
+            'user_id' => 'required|exists:users,id',  // Ensure user exists
+            'icon_id' => [
+                'required',
+                'exists:icons,id', // Ensure icon exists
+                Rule::unique('wallets')->where(function ($query) use ($request) {
+                    return $query->where('user_id', $request->user_id);
+                })
+            ], // Ensure unique icon_id per user_id
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('wallets')->where(function ($query) use ($request) {
+                    return $query->where('user_id', $request->user_id);
+                })
+            ], // Ensure unique wallet name per user
+            'balance' => 'required|numeric|min:0|max:99999999.99', // Ensure balance is a positive number with a reasonable limit
+            'currency' => 'sometimes|required|string|size:3', // Ensure currency is a valid 3-letter code (e.g., USD)
         ]);
+
 
         // Find the wallet based on id and user_id
         $wallet = Wallet::where('id', $id)
