@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('currencies', function (Blueprint $table) {
             $table->id();
+            $table->string('flag')->nullable();
             $table->string('currency_code', 3);
             $table->string('currency_name');
             $table->decimal('exchange_rate_to_base', 10, 6);
