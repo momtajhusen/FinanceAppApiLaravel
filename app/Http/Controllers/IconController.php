@@ -24,29 +24,40 @@ class IconController extends Controller
     // POST /icons
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string',
-            'type' => 'required|in:Wallet,Categories',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
+        try {
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string',
+                'type' => 'required|in:Wallet,Categories',
+                'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            ]);
+        
+            if ($validator->fails()) {
+                return response()->json(['errors' => $validator->errors()], 422);
+            }
+        
+            // Handle the image upload
+            if ($request->hasFile('image')) {
+                $imagePath = $request->file('image')->store('icons', 'public');
+            } else {
+                return response()->json(['error' => 'Image upload failed.'], 400);
+            }
+        
+            $icon = Icon::create([
+                'name' => $request->name,
+                'type' => $request->type,
+                'path' => $imagePath,
+            ]);
+        
+            return response()->json($icon, 201);
+        } catch (\Exception $e) {
+            // Log the exception
+            \Log::error('Failed to create icon: ' . $e->getMessage());
     
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            // Return a more specific error message
+            return response()->json(['error' => 'An unexpected error occurred. Please try again later.'], 500);
         }
-    
-        // Handle the image upload
-        if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('icons', 'public');
-        }
-    
-        $icon = Icon::create([
-            'name' => $request->name,
-            'type' => $request->type,
-            'path' => $imagePath,
-        ]);
-    
-        return response()->json($icon, 201);
     }
+    
     
     
 
