@@ -27,34 +27,29 @@ class CategoryController extends Controller
 
     public function store(Request $request)
     {
-        try {
-
-            $validator = Validator::make($request->all(), [
-                'name' => 'required|string|max:255',
-                'type' => 'required|in:Income,Expense',
-                'icon_id' => 'required|exists:icons,id',
-            ]);
-        
-
-            if ($validator->fails()) {
-                return response()->json(['errors' => $validator->errors()], 422);
-            }
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'type' => 'required|in:Income,Expense',
+            'icon_id' => 'required|exists:icons,id', // Assuming 'icons' is the correct table name
+            'parent_id' => 'nullable|exists:categories,id', // Optional, should exist in 'categories' table if provided
+        ]);
     
+        try {
             $category = Category::create([
                 'name' => $request->name,
                 'type' => $request->type,
                 'icon_id' => $request->icon_id,
-                'parent_id' => $request->parent_id,
+                'parent_id' => $request->parent_id ?? null, // Set to null if not provided
                 'user_id' => Auth::id(),
-            ]);
+            ]);            
     
             return response()->json($category, 201);
         } catch (\Exception $e) {
-            // Log the exception message for debugging
             \Log::error('Error creating category: ' . $e->getMessage());
             return response()->json(['error' => 'Server Error'], 500);
         }
     }
+    
     
 
     public function show($id)
