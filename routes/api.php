@@ -16,20 +16,22 @@ use App\Http\Controllers\ChildCategoryController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\AuthController;
 
+Route::middleware('auth:api')->group(function () {
+    
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/verify-token', [AuthController::class, 'verifyToken']);
+
+    Route::apiResource('users', UserController::class);
+    Route::apiResource('transactions', TransactionController::class);
+    Route::apiResource('wallets', WalletController::class);
+    Route::apiResource('budgets', BudgetController::class);
+    Route::apiResource('currencies', CurrencyController::class);
+    Route::apiResource('goals', GoalController::class);
+    Route::apiResource('settings', SettingController::class);
+    Route::apiResource('icons', IconController::class);
+    Route::apiResource('categories', CategoryController::class);
+});
+
+// Public routes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api');
-
-// Verify token route
-Route::middleware('auth:api')->get('/verify-token', [AuthController::class, 'verifyToken']);
-
-// Other routes
-Route::apiResource('users', UserController::class);
-Route::apiResource('transactions', TransactionController::class);
-Route::apiResource('wallets', WalletController::class);
-Route::apiResource('budgets', BudgetController::class);
-Route::apiResource('currencies', CurrencyController::class);
-Route::apiResource('goals', GoalController::class);
-Route::apiResource('settings', SettingController::class);
-Route::apiResource('icons', IconController::class);
-Route::apiResource('categories', CategoryController::class);
