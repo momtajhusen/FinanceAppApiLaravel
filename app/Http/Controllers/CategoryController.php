@@ -7,23 +7,35 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use App\Models\Icon; 
 
 
 class CategoryController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         // Check if the authenticated user is a developer or not
         if (Auth::user()->isDeveloper()) {
             // Developers can see all categories
-            $categories = Category::with('icon', 'children')->get();
+            $categories = Category::all();
         } else {
             // Regular users can only see their own categories
-            $categories = Category::where('user_id', Auth::id())->with('icon', 'children')->get();
+            $categories = Category::where('user_id', Auth::id())->get();
         }
+
+        // Fetch icon paths for categories
+        $iconIds = $categories->pluck('icon_id')->unique();
+        $icons = Icon::whereIn('id', $iconIds)->pluck('path', 'id');
+
+        // Map icon paths to categories
+        $categories->map(function ($category) use ($icons) {
+            $category->icon_path = $icons->get($category->icon_id, null); // Default to null if icon_id not found
+            return $category;
+        });
 
         return response()->json($categories);
     }
+    
 
     public function store(Request $request)
     {
