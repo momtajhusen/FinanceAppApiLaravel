@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('phone', 15)->nullable();
             $table->string('profile_image_url')->nullable();
             $table->string('role')->default('user'); // Add this line for role management
+            $table->string('api_token', 80)->unique()->nullable();
             $table->timestamps();
         });
 

@@ -1,5 +1,6 @@
 <?php
 
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
@@ -19,6 +20,10 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api');
 
+// Verify token route
+Route::middleware('auth:api')->get('/verify-token', [AuthController::class, 'verifyToken']);
+
+// Other routes
 Route::apiResource('users', UserController::class);
 Route::apiResource('transactions', TransactionController::class);
 Route::apiResource('wallets', WalletController::class);

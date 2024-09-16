@@ -40,6 +40,12 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+
+        'api' => [
+            'driver' => 'token', // Or 'sanctum' or 'jwt', depending on your setup
+            'provider' => 'users',
+            'hash' => false,
+        ],
     ],
 
     /*
