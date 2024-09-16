@@ -27,34 +27,23 @@ class CategoryController extends Controller
 
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'type' => 'required|in:Income,Expense',
-            'icon_id' => 'required|exists:icons,id',
-            'parent_id' => 'nullable|exists:categories,id',
-        ], [
-            'name.required' => 'The category name is required.',
-            'name.string' => 'The category name must be a string.',
-            'name.max' => 'The category name may not be greater than 255 characters.',
-            'type.required' => 'The category type is required.',
-            'type.in' => 'The category type must be either Income or Expense.',
-            'icon_id.required' => 'The icon ID is required.',
-            'icon_id.exists' => 'The selected icon ID does not exist.',
-            'parent_id.exists' => 'The selected parent category does not exist.',
-        ]);
+        // $validator = Validator::make($request->all(), [
+        //     'name' => 'required|string|max:255',
+        //     'type' => 'required|in:Income,Expense',
+        //     'icon_id' => 'required|exists:icons,id', // Assuming 'icons' is the correct table name
+        //     'parent_id' => 'nullable|exists:categories,id',
+        // ]);
     
-        if ($validator->fails()) {
-            // Log the validation errors for debugging
-            \Log::error('Validation errors: ' . $validator->errors());
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
+        // if ($validator->fails()) {
+        //     return response()->json(['errors' => $validator->errors()], 422);
+        // }
     
         try {
             $category = Category::create([
                 'name' => $request->name,
                 'type' => $request->type,
                 'icon_id' => $request->icon_id,
-                'parent_id' => $request->parent_id ?? null,
+                'parent_id' => $request->parent_id ?? null, // Set to null if not provided
                 'user_id' => Auth::id(),
             ]);            
     
@@ -64,7 +53,6 @@ class CategoryController extends Controller
             return response()->json(['error' => 'Server Error'], 500);
         }
     }
-    
     
     
 
