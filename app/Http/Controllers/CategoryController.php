@@ -27,12 +27,16 @@ class CategoryController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'type' => 'required|in:Income,Expense',
             'icon_id' => 'required|exists:icons,id', // Assuming 'icons' is the correct table name
-            'parent_id' => 'nullable|exists:categories,id', // Optional, should exist in 'categories' table if provided
+            'parent_id' => 'nullable|exists:categories,id',
         ]);
+    
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
     
         try {
             $category = Category::create([
