@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users'); // Add this line for user relationship
+            $table->foreignId('user_id')->constrained('users'); // Ensure the 'users' table exists and is correctly referenced
             $table->string('name');
             $table->enum('type', ['Income', 'Expense']);
-            $table->foreignId('icon_id')->constrained('icones'); // Ensure the correct table name
-            $table->foreignId('parent_id')->nullable()->constrained('categories'); // For hierarchy
+            $table->foreignId('icon_id')->constrained('icons'); // Make sure the 'icons' table name is correct
+            $table->foreignId('parent_id')->nullable()->constrained('categories'); // Self-referencing for hierarchy
             $table->timestamps();
         });
     }

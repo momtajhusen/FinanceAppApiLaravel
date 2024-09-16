@@ -26,44 +26,43 @@ class IconController extends Controller
     // POST /icons
     public function store(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'type' => 'required|in:Income,Expense',
+            'icon_id' => 'required|exists:icons,id',
+            'parent_id' => 'nullable|exists:categories,id',
+        ], [
+            'name.required' => 'The category name is required.',
+            'name.string' => 'The category name must be a string.',
+            'name.max' => 'The category name may not be greater than 255 characters.',
+            'type.required' => 'The category type is required.',
+            'type.in' => 'The category type must be either Income or Expense.',
+            'icon_id.required' => 'The icon ID is required.',
+            'icon_id.exists' => 'The selected icon ID does not exist.',
+            'parent_id.exists' => 'The selected parent category does not exist.',
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+    
         try {
-            $validator = Validator::make($request->all(), [
-                'name' => 'required|string',
-                'type' => 'required|in:Wallet,Categories',
-                'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-            ]);
-        
-            if ($validator->fails()) {
-                return response()->json(['errors' => $validator->errors()], 422);
-            }
-            
-        
-            // Handle the image upload
-            if ($request->hasFile('image')) {
-                $imagePath = $request->file('image')->store('icons', 'public');
-            } else {
-                return response()->json(['error' => 'Image upload failed.'], 400);
-            }
-        
-            $icon = Icon::create([
+            $category = Category::create([
                 'name' => $request->name,
                 'type' => $request->type,
-                'path' => $imagePath,
+                'icon_id' => $request->icon_id,
+                'parent_id' => $request->parent_id,
+                'user_id' => Auth::id(),
             ]);
-        
-            return response()->json($icon, 201);
-        } catch (\Exception $e) {
-            // Log the exception
-            \Log::error('Failed to create icon: ' . $e->getMessage());
     
-            // Return a more specific error message
-            return response()->json(['error' => 'An unexpected error occurred. Please try again later.'], 500);
+            return response()->json($category, 201);
+        } catch (\Exception $e) {
+            \Log::error('Error creating category: ' . $e->getMessage());
+            return response()->json(['error' => 'Server Error'], 500);
         }
     }
     
     
-    
-
     // PUT /icons/{id}
     public function update(Request $request, $id)
     {
