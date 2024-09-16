@@ -6,6 +6,7 @@ use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 
 class CategoryController extends Controller
@@ -26,23 +27,30 @@ class CategoryController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'type' => 'required|in:Income,Expense',
-            'icon_id' => 'required|exists:icons,id',
-            'parent_id' => 'nullable|exists:categories,id',
-        ]);
-
-        $category = Category::create([
-            'name' => $request->name,
-            'type' => $request->type,
-            'icon_id' => $request->icon_id,
-            'parent_id' => $request->parent_id,
-            'user_id' => Auth::id(),
-        ]);
-
-        return response()->json($category, 201);
+        try {
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'type' => 'required|in:Income,Expense',
+                'icon_id' => 'required|exists:icons,id',
+                'parent_id' => 'nullable|exists:categories,id',
+            ]);
+    
+            $category = Category::create([
+                'name' => $request->name,
+                'type' => $request->type,
+                'icon_id' => $request->icon_id,
+                'parent_id' => $request->parent_id,
+                'user_id' => Auth::id(),
+            ]);
+    
+            return response()->json($category, 201);
+        } catch (\Exception $e) {
+            // Log the exception message for debugging
+            \Log::error('Error creating category: ' . $e->getMessage());
+            return response()->json(['error' => 'Server Error'], 500);
+        }
     }
+    
 
     public function show($id)
     {
