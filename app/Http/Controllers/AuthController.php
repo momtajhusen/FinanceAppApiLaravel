@@ -27,6 +27,7 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'api_token' => Str::random(60),
         ]);
     
         // Create and return a new access token
@@ -65,17 +66,13 @@ class AuthController extends Controller
     // Verify token
     public function verifyToken(Request $request)
     {
-        // Check if the user is authenticated
-        $user = Auth::guard('api')->user();
+        $user = User::where('api_token', $request->bearerToken())->first();
         
         if ($user) {
-            // Return success response with user information
             return response()->json(['message' => 'Token is valid', 'user' => $user], 200);
         } else {
-            // Return error response if token is invalid
             return response()->json(['message' => 'Invalid token'], 401);
         }
     }
     
-
 }
