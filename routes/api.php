@@ -13,8 +13,12 @@ use App\Http\Controllers\IconController;
 use App\Http\Controllers\ParentCategoryController;
 use App\Http\Controllers\ChildCategoryController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\AuthController;
 
-Route::post('login', [UserController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api');
+
 Route::apiResource('users', UserController::class);
 Route::apiResource('transactions', TransactionController::class);
 Route::apiResource('wallets', WalletController::class);

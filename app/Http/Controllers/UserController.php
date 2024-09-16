@@ -5,31 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 
 class UserController extends Controller
 {
-    public function login(Request $request)
-    {
-        $credentials = $request->only('email', 'password');
-
-        if (Auth::attempt($credentials)) {
-            // If authentication is successful, return the token
-            $user = Auth::user();
-            $token = $user->createToken('authToken')->accessToken; // Assuming you are using Laravel Passport
-            return response()->json(['token' => $token, 'user' => $user], 200);
-        } else {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
-    }
-    
     public function index()
     {
         return User::all();
     }
-    
 
     public function store(Request $request)
     {
