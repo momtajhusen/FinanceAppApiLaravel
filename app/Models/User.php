@@ -5,11 +5,10 @@ namespace App\Models;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Passport\HasApiTokens; // Import the trait
 
 class User extends Authenticatable
 {
-    use HasApiTokens, Notifiable; // Add the trait here
+    use Notifiable;
 
     protected $fillable = [
         'name',
