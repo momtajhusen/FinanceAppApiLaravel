@@ -14,6 +14,7 @@ use App\Http\Controllers\ParentCategoryController;
 use App\Http\Controllers\ChildCategoryController;
 use App\Http\Controllers\CategoryController;
 
+Route::post('login', [UserController::class, 'login']);
 Route::apiResource('users', UserController::class);
 Route::apiResource('transactions', TransactionController::class);
 Route::apiResource('wallets', WalletController::class);
