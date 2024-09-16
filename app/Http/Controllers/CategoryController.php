@@ -33,7 +33,6 @@ class CategoryController extends Controller
                 'name' => 'required|string|max:255',
                 'type' => 'required|in:Income,Expense',
                 'icon_id' => 'required|exists:icons,id',
-                'parent_id' => 'nullable|exists:categories,id',
             ]);
         
 
