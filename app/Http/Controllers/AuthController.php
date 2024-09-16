@@ -29,6 +29,7 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
+        // Create and return a new access token
         $token = $user->createToken('authToken')->accessToken;
 
         return response()->json(['token' => $token, 'user' => $user], 201);
@@ -44,6 +45,7 @@ class AuthController extends Controller
         }
 
         $user = Auth::user();
+        // Create and return a new access token
         $token = $user->createToken('authToken')->accessToken;
 
         return response()->json(['token' => $token, 'user' => $user], 200);
@@ -52,7 +54,24 @@ class AuthController extends Controller
     // Logout user (invalidate the token)
     public function logout(Request $request)
     {
-        $request->user()->token()->revoke();
+        // Revoke all tokens for the authenticated user
+        $request->user()->tokens()->delete();
         return response()->json(['message' => 'Successfully logged out']);
     }
+
+    // Verify token
+    public function verifyToken(Request $request)
+    {
+        // Check if the user is authenticated
+        $user = Auth::guard('api')->user();
+        
+        if ($user) {
+            // Return success response with user information
+            return response()->json(['message' => 'Token is valid', 'user' => $user], 200);
+        } else {
+            // Return error response if token is invalid
+            return response()->json(['message' => 'Invalid token'], 401);
+        }
+    }
+
 }
