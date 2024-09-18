@@ -90,6 +90,8 @@ class IconController extends Controller
     // DELETE /icons/{id}
     public function destroy($id)
     {
+        echo "hello";
+        return false;
         $icon = Icon::findOrFail($id);
         $icon->delete();
         return response()->json(null, 204);

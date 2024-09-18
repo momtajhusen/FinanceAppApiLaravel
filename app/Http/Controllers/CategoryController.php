@@ -12,16 +12,20 @@ use App\Models\Icon;
 
 class CategoryController extends Controller
 {
-    public function index(Request $request)
+ public function index(Request $request)
     {
         // Check if the authenticated user is a developer or not
-        if (Auth::user()->isDeveloper()) {
+        if (Auth::user()->role === 'developer') {
             // Developers can see all categories
             $categories = Category::all();
         } else {
             // Regular users can only see their own categories
             $categories = Category::where('user_id', Auth::id())->get();
         }
+
+        
+        // echo 'hello';
+        // return false;
 
         // Fetch icon paths for categories
         $iconIds = $categories->pluck('icon_id')->unique();
@@ -35,7 +39,6 @@ class CategoryController extends Controller
 
         return response()->json($categories);
     }
-    
 
     public function store(Request $request)
     {
@@ -66,14 +69,13 @@ class CategoryController extends Controller
         }
     }
     
-    
 
     public function show($id)
     {
         $category = Category::with('icon', 'children')->findOrFail($id);
 
         // Check if the user is allowed to view this category
-        if (Auth::user()->isDeveloper() || $category->user_id === Auth::id()) {
+        if (Auth::user()->role === 'developer' || $category->user_id === Auth::id()) {
             return response()->json($category);
         } else {
             return response()->json(['error' => 'Unauthorized'], 403);
@@ -92,7 +94,7 @@ class CategoryController extends Controller
         $category = Category::findOrFail($id);
 
         // Check if the user is allowed to update this category
-        if (Auth::user()->isDeveloper() || $category->user_id === Auth::id()) {
+        if (Auth::user()->role === 'developer' || $category->user_id === Auth::id()) {
             $category->update($request->all());
             return response()->json($category);
         } else {
@@ -105,7 +107,7 @@ class CategoryController extends Controller
         $category = Category::findOrFail($id);
 
         // Check if the user is allowed to delete this category
-        if (Auth::user()->isDeveloper() || $category->user_id === Auth::id()) {
+        if (Auth::user()->role === 'developer' || $category->user_id === Auth::id()) {
             $category->delete();
             return response()->json(null, 204);
         } else {
