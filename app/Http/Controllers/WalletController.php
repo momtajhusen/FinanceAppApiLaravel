@@ -31,7 +31,7 @@ class WalletController extends Controller
         // Map icon path to wallets
         $wallets->map(function ($wallet) use ($icons) {
             $wallet->icon_path = $icons->get($wallet->icon_id);
-            $walletCount = DB::table('transactions')->where('wallet_id', $wallet->id)->count();
+            $wallet->transactions_in_use = DB::table('transactions')->where('wallet_id', $wallet->id)->count();
             return $wallet;
         });
 
