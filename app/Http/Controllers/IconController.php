@@ -22,21 +22,17 @@ class IconController extends Controller
             // Count how many wallets and categories are using the icon
             $walletCount = DB::table('wallets')->where('icon_id', $icon->id)->count();
             $categoryCount = DB::table('categories')->where('icon_id', $icon->id)->count();
-
-            $icon->$wallets_in_use = $walletCount;
-            $icon->$categories_in_use = $categoryCount;
-
     
-            // Return the icon along with wallet and category usage data
-            // return [
-            //     'icon' => $icon,
-            //     'wallets_in_use' => $walletCount,
-            //     'categories_in_use' => $categoryCount,
-            // ];
+            // Store the counts directly as properties of the $icon object
+            $icon->wallets_in_use = $walletCount;
+            $icon->categories_in_use = $categoryCount;
+    
+            return $icon; // Return the modified icon object
         });
     
         return response()->json($iconsWithUsage);
     }
+    
     
 
     // GET /icons/{id}
