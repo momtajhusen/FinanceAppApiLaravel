@@ -19,7 +19,7 @@ return new class extends Migration
             $table->decimal('amount', 10, 2);
             $table->enum('transaction_type', ['Income', 'Expense']);
             $table->text('note')->nullable();
-            $table->date('transaction_date');
+            $table->dateTime('transaction_date');
             $table->string('currency', 3)->default('USD');
             $table->decimal('exchange_rate_to_base', 10, 6);
             $table->string('attachment_url')->nullable();

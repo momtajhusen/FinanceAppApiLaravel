@@ -3,22 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Transaction;
+use App\Models\Wallet;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-
 class TransactionController extends Controller
 {
-    /**
-     * Display a listing of the transactions.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        $transactions = Transaction::with('user', 'wallet', 'category')->get();
-        return response()->json($transactions);
-    }
+    // ... existing methods ...
 
     /**
      * Store a newly created transaction in storage.
@@ -28,7 +20,7 @@ class TransactionController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'user_id' => 'required|exists:users,id',
             'wallet_id' => 'required|exists:wallets,id',
             'category_id' => 'required|exists:categories,id',
@@ -40,20 +32,23 @@ class TransactionController extends Controller
             'attachment_url' => 'nullable|url',
         ]);
 
+        // Check for validation failures
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        // Get currency and transaction type
+        $wallet = Wallet::find($request->wallet_id);
+        $category = Category::find($request->category_id);
+
+        // Override currency and transaction_type
+        $request->merge([
+            'currency' => $wallet->currency,
+            'transaction_type' => $category->transaction_type,
+        ]);
+
         $transaction = Transaction::create($request->all());
         return response()->json($transaction, 201);
-    }
-
-    /**
-     * Display the specified transaction.
-     *
-     * @param \App\Models\Transaction $transaction
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Transaction $transaction)
-    {
-        $transaction->load('user', 'wallet', 'category');
-        return response()->json($transaction);
     }
 
     /**
@@ -65,7 +60,7 @@ class TransactionController extends Controller
      */
     public function update(Request $request, Transaction $transaction)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'user_id' => 'required|exists:users,id',
             'wallet_id' => 'required|exists:wallets,id',
             'category_id' => 'required|exists:categories,id',
@@ -77,19 +72,24 @@ class TransactionController extends Controller
             'attachment_url' => 'nullable|url',
         ]);
 
+        // Check for validation failures
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        // Get currency and transaction type
+        $wallet = Wallet::find($request->wallet_id);
+        $category = Category::find($request->category_id);
+
+        // Override currency and transaction_type
+        $request->merge([
+            'currency' => $wallet->currency,
+            'transaction_type' => $category->transaction_type,
+        ]);
+
         $transaction->update($request->all());
         return response()->json($transaction);
     }
 
-    /**
-     * Remove the specified transaction from storage.
-     *
-     * @param \App\Models\Transaction $transaction
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Transaction $transaction)
-    {
-        $transaction->delete();
-        return response()->json(null, 204);
-    }
+    // ... existing methods ...
 }
