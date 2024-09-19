@@ -6,11 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Transaction extends Model
 {
-    protected $fillable = [
-        'user_id', 'wallet_id', 'category_id', 'amount', 
-        'transaction_type', 'note', 'transaction_date', 
-        'currency', 'exchange_rate_to_base', 'attachment_url'
-    ];
+    protected $fillable = ['user_id', 'wallet_id', 'category_id', 'amount', 'transaction_type', 'note', 'transaction_date', 'currency', 'attachment_url'];
+
 
     public function category()
     {
