@@ -14,9 +14,26 @@ class IconController extends Controller
     // GET /icons
     public function index()
     {
+        // Get all icons
         $icons = Icon::all();
-        return response()->json($icons);
+    
+        // Map through each icon and attach the count of wallets and categories using it
+        $iconsWithUsage = $icons->map(function ($icon) {
+            // Count how many wallets and categories are using the icon
+            $walletCount = DB::table('wallets')->where('icon_id', $icon->id)->count();
+            $categoryCount = DB::table('categories')->where('icon_id', $icon->id)->count();
+    
+            // Return the icon along with wallet and category usage data
+            return [
+                'icon' => $icon,
+                'wallets_in_use' => $walletCount,
+                'categories_in_use' => $categoryCount,
+            ];
+        });
+    
+        return response()->json($iconsWithUsage);
     }
+    
 
     // GET /icons/{id}
     public function show($id)
