@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Icon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 
 class IconController extends Controller
@@ -87,13 +88,30 @@ class IconController extends Controller
         return response()->json($icon);
     }
 
-    // DELETE /icons/{id}
     public function destroy($id)
     {
-        echo "hello";
-        return false;
-        $icon = Icon::findOrFail($id);
-        $icon->delete();
-        return response()->json(null, 204);
+        // Validate that $id is numeric
+        if (!is_numeric($id)) {
+            \Log::warning("Invalid icon ID: {$id}");
+            return response()->json(['error' => 'Invalid ID provided.'], 400);
+        }
+    
+        try {
+            $icon = Icon::findOrFail($id);
+    
+            // Additional validation (if needed) can go here before deletion
+    
+            $icon->delete();
+            \Log::info("Icon deleted successfully: ID {$id}");
+            return response()->json(null, 204);
+    
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            \Log::error("Icon not found: ID {$id}");
+            return response()->json(['error' => 'Icon not found.'], 404);
+        } catch (\Exception $e) {
+            \Log::error("Error deleting icon: " . $e->getMessage());
+            return response()->json(['error' => 'Could not delete the icon.'], 500);
+        }
     }
+
 }
