@@ -6,6 +6,7 @@ use App\Models\Icon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 
 class IconController extends Controller
@@ -99,8 +100,31 @@ class IconController extends Controller
         try {
             $icon = Icon::findOrFail($id);
     
-            // Additional validation (if needed) can go here before deletion
+            // Check if the icon is used in any wallets or categories
+            $walletsUsingIcon = \DB::table('wallets')
+                ->where('icon_id', $id)
+                ->pluck('name'); // Get the names of the wallets using this icon
     
+            $categoriesUsingIcon = \DB::table('categories')
+                ->where('icon_id', $id)
+                ->pluck('name'); // Get the names of the categories using this icon
+    
+            if ($walletsUsingIcon->isNotEmpty() || $categoriesUsingIcon->isNotEmpty()) {
+                $message = "This icon cannot be deleted because it is being used in the following:\n";
+                
+                if ($walletsUsingIcon->isNotEmpty()) {
+                    $message .= "Wallets: " . implode(', ', $walletsUsingIcon->toArray()) . ".\n";
+                }
+    
+                if ($categoriesUsingIcon->isNotEmpty()) {
+                    $message .= "Categories: " . implode(', ', $categoriesUsingIcon->toArray()) . ".";
+                }
+    
+                \Log::info("Icon ID {$id} is in use and cannot be deleted.");
+                return response()->json(['error' => $message], 400);
+            }
+    
+            // If icon is not used, proceed to delete
             $icon->delete();
             \Log::info("Icon deleted successfully: ID {$id}");
             return response()->json(null, 204);
@@ -113,5 +137,6 @@ class IconController extends Controller
             return response()->json(['error' => 'Could not delete the icon.'], 500);
         }
     }
+    
 
 }
