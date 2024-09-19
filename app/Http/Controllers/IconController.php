@@ -134,8 +134,21 @@ class IconController extends Controller
                 }
     
                 if ($categoriesUsingIcon->isNotEmpty()) {
-                    $message .= "Categories: " . implode(', ', $categoriesUsingIcon->toArray()) . ".";
+                    $message .= "Categories: " . implode(', ', $categoriesUsingIcon->toArray()) . ".\n";
                 }
+    
+                // Adding step-by-step instructions with specific wallet and category names
+                $message .= "\nTo delete this icon, follow these steps:\n";
+                
+                if ($walletsUsingIcon->isNotEmpty()) {
+                    $message .= "1. Update the following wallets to use a different icon: " . implode(', ', $walletsUsingIcon->toArray()) . ".\n";
+                }
+                
+                if ($categoriesUsingIcon->isNotEmpty()) {
+                    $message .= "2. Update the following categories to use a different icon: " . implode(', ', $categoriesUsingIcon->toArray()) . ".\n";
+                }
+    
+                $message .= "3. Once no wallets or categories are using this icon, try deleting it again.\n";
     
                 \Log::info("Icon ID {$id} is in use and cannot be deleted.");
                 return response()->json(['error' => $message], 400);
@@ -154,6 +167,7 @@ class IconController extends Controller
             return response()->json(['error' => 'Could not delete the icon.'], 500);
         }
     }
+    
     
 
 }
