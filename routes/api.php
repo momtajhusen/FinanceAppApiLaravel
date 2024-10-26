@@ -11,21 +11,26 @@ use App\Http\Controllers\GoalController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\IconController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\GoogleAuthController;
 
 // Public routes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
-// Protected routes
+// Google OAuth routes
+Route::get('auth/google', [GoogleAuthController::class, 'redirectToGoogle'])->name('google.login');
+Route::get('auth/google/callback', [GoogleAuthController::class, 'handleGoogleCallback'])->name('google.callback');
+
+// Protected routes (authentication required)
 Route::middleware('auth:api')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/verify-token', [AuthController::class, 'verifyToken']);
 
+    // API resources for managing data
     Route::apiResource('users', UserController::class);
     Route::apiResource('transactions', TransactionController::class);
     Route::get('/transactions-category', [TransactionController::class, 'fetchTransactionsByCategory']);
 
-    
     Route::apiResource('wallets', WalletController::class);
     Route::apiResource('budgets', BudgetController::class);
     Route::apiResource('currencies', CurrencyController::class);
@@ -33,8 +38,8 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('settings', SettingController::class);
     Route::apiResource('icons', IconController::class);
     Route::apiResource('categories', CategoryController::class);
-   
-   // Dashboard Data Api   
-   Route::get('/transactions-income-expense-data', [TransactionController::class, 'fetchTransactionsIncomeExpenseData']);
-   Route::get('/top-spending-transactions', [TransactionController::class, 'topSpendingTransactions']);
+
+    // Dashboard Data APIs
+    Route::get('/transactions-income-expense-data', [TransactionController::class, 'fetchTransactionsIncomeExpenseData']);
+    Route::get('/top-spending-transactions', [TransactionController::class, 'topSpendingTransactions']);
 });
