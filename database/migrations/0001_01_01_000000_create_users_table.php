@@ -1,5 +1,3 @@
-<?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,13 +13,16 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
-            $table->string('password');
+            $table->string('password')->nullable(); // Manual login ke liye required, social login ke liye nullable
             $table->rememberToken();
             $table->string('currency', 3)->default('USD');
             $table->string('phone', 15)->nullable();
             $table->string('profile_image_url')->nullable();
-            $table->string('role')->default('user'); // Add this line for role management
+            $table->string('role')->default('user');
             $table->string('api_token', 80)->unique()->nullable();
+            $table->string('provider')->nullable(); // Social login provider (e.g., Google, Facebook)
+            $table->string('provider_id')->nullable()->unique(); // Provider se aaya unique user ID
+            $table->string('login_method')->default('manual'); // 'manual' or 'social'
             $table->timestamps();
         });
 

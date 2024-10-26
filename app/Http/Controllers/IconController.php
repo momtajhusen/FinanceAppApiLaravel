@@ -48,7 +48,7 @@ class IconController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string',
-                'type' => 'required|in:Wallet,Categories',
+                'type' => 'required|in:Wallet,Categories,Other',
                 'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
         
@@ -90,7 +90,7 @@ class IconController extends Controller
         $icon = Icon::findOrFail($id);
         $request->validate([
             'name' => 'required|string',
-            'type' => 'required|in:Wallet,Categories',
+            'type' => 'required|in:Wallet,Categories,Other',
             'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
@@ -167,7 +167,5 @@ class IconController extends Controller
             return response()->json(['error' => 'Could not delete the icon.'], 500);
         }
     }
-    
-    
 
 }

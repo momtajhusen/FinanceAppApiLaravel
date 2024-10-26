@@ -26,6 +26,7 @@ class CurrencyController extends Controller
             'flag' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'currency_code' => 'required|string|max:3|unique:currencies',
             'currency_name' => 'required|string|unique:currencies',
+            'currency_symbols' => 'required|string|unique:currencies',
         ]);
     
         if ($validator->fails()) {
@@ -55,6 +56,7 @@ class CurrencyController extends Controller
             'flag' => $flagPath,
             'currency_code' => $request->currency_code,
             'currency_name' => $request->currency_name,
+            'currency_symbols' => $request->currency_symbols,
         ]);
     
         return response()->json([
@@ -116,6 +118,7 @@ class CurrencyController extends Controller
 
         $currency->currency_code = $request->currency_code;
         $currency->currency_name = $request->currency_name;
+        $currency->currency_symbols = $request->currency_symbols;
         $currency->exchange_rate_to_base = $request->exchange_rate_to_base;
 
         $currency->save();
