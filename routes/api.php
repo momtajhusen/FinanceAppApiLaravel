@@ -18,8 +18,9 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
 // Google OAuth routes
-Route::get('auth/google', [GoogleAuthController::class, 'redirectToGoogle'])->name('google.login');
-Route::get('auth/google/callback', [GoogleAuthController::class, 'handleGoogleCallback'])->name('google.callback');
+Route::get('/auth/google', [GoogleAuthController::class, 'redirectToGoogle']);
+Route::get('/auth/google/callback', [GoogleAuthController::class, 'handleGoogleCallback']);
+
 
 // Protected routes (authentication required)
 Route::middleware('auth:api')->group(function () {

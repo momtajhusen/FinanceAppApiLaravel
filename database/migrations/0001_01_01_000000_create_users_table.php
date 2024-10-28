@@ -13,10 +13,11 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
+            $table->string('phone', 15)->nullable();
             $table->string('password')->nullable(); // Manual login ke liye required, social login ke liye nullable
+            $table->string('pin_code', 4)->nullable();
             $table->rememberToken();
             $table->string('currency', 3)->default('USD');
-            $table->string('phone', 15)->nullable();
             $table->string('profile_image_url')->nullable();
             $table->string('role')->default('user');
             $table->string('api_token', 80)->unique()->nullable();

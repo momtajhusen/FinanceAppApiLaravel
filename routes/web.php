@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\GoogleAuthController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -13,3 +14,5 @@ Route::get('/command/storage', function () {
     $linkFolder = $_SERVER['DOCUMENT_ROOT'] . '/storage';
     symlink($targetFolder, $linkFolder);
 });
+
+Route::get('/auth/google/callback', [GoogleAuthController::class, 'handleGoogleCallback']);
